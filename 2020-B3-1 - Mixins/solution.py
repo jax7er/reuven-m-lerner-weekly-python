@@ -11,7 +11,10 @@ class Serializable:
 
     def load(self, file_name: str):
         with open(file_name, "rb") as file:
-            vars(self).update(pkl.load(file))
+            data = pkl.load(file)
+        
+        for attr, value in data.items():
+            setattr(self, attr, value)
 
 
 class JSONMixin:
@@ -21,15 +24,16 @@ class JSONMixin:
 
     def load(self, file_name: str):
         with open(file_name) as file:
-            vars(self).update(json.load(file))
+            data = json.load(file)
+        
+        for attr, value in data.items():
+            setattr(self, attr, value)
 
 
 class XMLMixin:
     def dump(self, file_name: str):
-        tree = ET.Element(
-            "root", 
-            {attr: str(val) for attr, val in vars(self).items()}
-        )
+        tree = ET.Element("root")
+        tree.attrib = {attr: str(val) for attr, val in vars(self).items()}
 
         with open(file_name, "wb") as file:
             file.write(ET.tostring(tree))
