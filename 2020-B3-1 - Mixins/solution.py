@@ -53,10 +53,8 @@ class XMLMixin:
 
 class CSVMixin:
     def dump(self, file_name: str):      
-        rows = zip(*vars(self).items())
-
         with open(file_name, "w", newline="") as file:
-            csv.writer(file,).writerows(rows)
+            csv.writer(file).writerows(zip(*vars(self).items()))
 
     def load(self, file_name: str):
         with open(file_name, newline="") as file:
