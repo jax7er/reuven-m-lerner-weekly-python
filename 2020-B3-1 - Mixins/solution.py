@@ -52,22 +52,23 @@ class XMLMixin:
 
 
 class CSVMixin:
-    def dump(self, file_name: str):
-        self_dict = vars(self)
-        
+    def dump(self, file_name: str):      
+        rows = zip(*vars(self).items())
+
         with open(file_name, "w") as file:
-            writer = csv.writer(file, lineterminator="\n")
-            writer.writerow(self_dict.keys())
-            writer.writerow(self_dict.values())
+            csv.writer(file, lineterminator="\n").writerows(rows)
 
     def load(self, file_name: str):
         with open(file_name) as file:
-            reader = csv.reader(file)
-            attrs = next(reader)
-            values = next(reader)
+            attrs, values = csv.reader(file)
 
-            for attr, value in zip(attrs, values):
-                setattr(self, attr, value)
+        for attr, value in zip(attrs, values):
+            for T in (int, float, str):
+                try:
+                    setattr(self, attr, T(value))
+                    break
+                except ValueError:
+                    pass
 
 
 # class Book(CSVMixin, Serializable):
@@ -78,6 +79,8 @@ class CSVMixin:
 
 # b = Book("Practice Makes Python", "Reuven Lerner", 39)
 # b.dump('book.csv')      # book is now stored on disk, in CSV format
+# print(vars(b))
 
 # b2 = Book('blah title', 'blah author', 100)
 # b2.load('book.csv')     # title, author, and price now reflect disk file
+# print(vars(b2))
