@@ -13,9 +13,10 @@ with socket.socket(ADDR_FAM, SOCK_TYPE) as server_sock:
     server_sock.listen()
 
     client_sock, client_addr = server_sock.accept()
-    with client_sock:
 
+    with client_sock:
         data = ""
+        
         while not data.startswith("bye"):
             data = client_sock.recv(1024).decode()
 
@@ -30,5 +31,4 @@ with socket.socket(ADDR_FAM, SOCK_TYPE) as server_sock:
             else:
                 response = "I'm sorry Laura, I don't understand the question"
             
-            client_sock.sendall(response.encode())
-    
+            client_sock.sendall(response.encode())    
